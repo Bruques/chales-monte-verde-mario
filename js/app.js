@@ -380,6 +380,8 @@
     if (location.hash === '#painel') CMV.openPanel();
   }
 
+  if (/[?&]animar=1/.test(location.search)) document.documentElement.classList.add('fm');
+
   CMV.init = async function () {
     let c = null;
     // se o armazenamento do navegador travar (modo privado, por exemplo), segue com o conteúdo original

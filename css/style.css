@@ -344,11 +344,15 @@ footer a:hover{color:var(--amber)}
   .req{grid-template-columns:1fr}.req .acts{justify-content:flex-start}
 }
 @media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .hero-bg,.marquee .track,.badge,.badge i,.scroll-ind::after,.wa-float::after{animation:none!important}
-  [data-par]{transform:none!important}
-  .rv{transform:none}
-  .hero h1 .w span{animation:none;transform:none}
+  /* ?animar=1 na URL (classe .fm no html) ignora esta regra, para testar */
+  html:not(.fm){scroll-behavior:auto}
+  html:not(.fm) .hero-bg,html:not(.fm) .marquee .track,html:not(.fm) .badge,html:not(.fm) .badge i,html:not(.fm) .scroll-ind::after,html:not(.fm) .wa-float::after{animation:none!important}
+  html:not(.fm) [data-par]{transform:none!important}
+  html:not(.fm) .rv{transform:none}
+  html:not(.fm) .hero h1 .w span{animation:none;transform:none}
+  /* sem animação, a faixa dourada vira arrastável com o dedo */
+  html:not(.fm) .marquee{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  html:not(.fm) .marquee::-webkit-scrollbar{display:none}
 }
 
 /* ================= Chalés Monte Verde: acréscimos ================= */
