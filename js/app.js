@@ -314,6 +314,8 @@
   CMV.renderPublic = renderAll;
 
   /* ================= efeitos ================= */
+  // navegadores sem IntersectionObserver: mostra tudo sem animar
+  if (!('IntersectionObserver' in window)) window.IntersectionObserver = function (cb) { return { observe: el => cb([{ isIntersecting: true, target: el }], { unobserve() {} }), unobserve() {} }; };
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
   const watch = () => $$('.rv:not(.in)').forEach(el => io.observe(el));
   const cio = new IntersectionObserver((es, o) => es.forEach(e => {
