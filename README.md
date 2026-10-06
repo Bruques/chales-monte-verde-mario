@@ -30,6 +30,12 @@ Com isso aparecem a aba "Fotos do site" e a seção "Fotos" dentro de cada hospe
 capa, remover). Em produção as imagens precisam de um serviço de armazenamento (por exemplo Cloudinary no plano
 gratuito), pois o plano gratuito do Firebase não inclui o Cloud Storage para projetos novos.
 
+## Responsivo e mobile-first
+O site deve funcionar bem em celulares (320 a 430 px) e o painel também. Ao mexer no layout, conferir que não há
+rolagem horizontal nem elementos cortados: itens de grid com `min-width:0`, linhas de botões com `flex-wrap`, textos
+longos que quebram e botões com pelo menos 44 px. Dica de teste: `python3 -m http.server` e uma página com
+`<iframe style="width:390px">` (o Chrome em janela estreita não passa de ~500 px).
+
 ## Pendências para a versão final
 - Ligar o Firebase (Firestore + Authentication) com login do proprietário.
 - Trocar WhatsApp, e-mail, preços, horários e políticas de exemplo pelos dados reais, e desligar a faixa de prévia
