@@ -357,7 +357,6 @@
     $('#mcopy').onclick = () => { try { navigator.clipboard.writeText(lastMsg); toast('Mensagem copiada'); } catch (e) { toast('Não foi possível copiar'); } };
     $$('[data-close]').forEach(b => b.onclick = () => $('#mconf').classList.remove('open'));
     $('#wa-float').onclick = e => { e.preventDefault(); openWA(`Olá! Vi o site do ${C.site.nome} e gostaria de mais informações.`); };
-    $('#open-panel').onclick = () => CMV.openPanel();
 
     // galeria: arrastar + lightbox
     const gal = $('#gal'); let down = false, sx = 0, sl = 0, moved = 0;

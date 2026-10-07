@@ -53,9 +53,16 @@
   /* ---------- abrir / fechar ---------- */
   CMV.openPanel = async function () {
     panel.classList.add('open'); document.body.style.overflow = 'hidden'; panel.scrollTop = 0;
+    // o botão responde mesmo que os dados do site ainda estejam carregando
+    for (let i = 0; i < 60 && !CMV.C; i++) await new Promise(r => setTimeout(r, 100));
+    if (!CMV.C) { panel.innerHTML = '<div class="login"><h3>Não foi possível carregar</h3><p>Recarregue a página e tente de novo.</p></div>'; return; }
     if (!Store.auth.isLogged()) { renderLogin(); return; }
     await enter();
   };
+  // ligado já na carga do script e também por toque (iOS) e pelo endereço #painel
+  const openBtn = $('#open-panel');
+  if (openBtn) openBtn.addEventListener('click', e => { e.preventDefault(); CMV.openPanel(); });
+  addEventListener('hashchange', () => { if (location.hash === '#painel') CMV.openPanel(); });
   CMV.closePanel = function () {
     panel.classList.remove('open'); document.body.style.overflow = '';
     if (location.hash === '#painel') history.replaceState(null, '', location.pathname + location.search);
@@ -66,7 +73,7 @@
   function renderLogin() {
     panel.innerHTML = `<div class="p-top"><div class="wrap"><div><b>Painel do proprietário</b></div><button class="out" id="ad-close">← Voltar ao site</button></div></div>
       <form class="login" id="login"><h3>Entrar</h3><p>Acesso restrito ao proprietário.</p>
-        <input type="password" id="lg-pw" placeholder="Senha" autocomplete="current-password" autofocus>
+        <input type="password" id="lg-pw" placeholder="Senha" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-dark" type="submit">Entrar</button>
         ${Store.auth.dica ? `<p class="fine" style="margin-top:14px">${esc(Store.auth.dica)}</p>` : ''}</form>`;
     $('#ad-close').onclick = CMV.closePanel;

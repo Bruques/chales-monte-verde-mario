@@ -73,7 +73,7 @@
     auth: {
       isLogged() { try { return sessionStorage.getItem(SESSAO) === '1'; } catch (e) { return false; } },
       async login(senha) {
-        if (senha !== SENHA_LOCAL) throw new Error('Senha incorreta');
+        if (String(senha).trim().toLowerCase() !== SENHA_LOCAL) throw new Error('Senha incorreta');
         try { sessionStorage.setItem(SESSAO, '1'); } catch (e) { /* ignora */ }
       },
       logout() { try { sessionStorage.removeItem(SESSAO); } catch (e) { /* ignora */ } },

@@ -541,3 +541,4 @@ img,svg,iframe{max-width:100%}
   .d{min-height:38px;font-size:.85rem}
 }
 .badge-s{white-space:nowrap}
+.owner-btn{min-height:44px;padding:10px 20px;font-size:.85rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
