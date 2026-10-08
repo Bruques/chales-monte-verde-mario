@@ -6,7 +6,7 @@
   const C = () => CMV.C;
 
   const FOTOS = !!(window.CMV_CONFIG && window.CMV_CONFIG.editarFotos);
-  const TABS = [['t-req', 'Solicitações'], ['t-cal', 'Calendário'], ['t-price', 'Preços'], ['t-acc', 'Hospedagens'], ['t-photos', 'Fotos do site'], ['t-text', 'Textos e contato'], ['t-rev', 'Depoimentos'], ['t-sys', 'Sistema']];
+  const TABS = [['t-req', 'Solicitações'], ['t-cal', 'Calendário'], ['t-price', 'Preços'], ['t-acc', 'Hospedagens'], ['t-photos', 'Fotos do site'], ['t-text', 'Textos e contato'], ['t-guia', 'Monte Verde'], ['t-rev', 'Depoimentos'], ['t-sys', 'Sistema']];
   if (!FOTOS) { const i = TABS.findIndex(t => t[0] === 't-photos'); if (i >= 0) TABS.splice(i, 1); }
   let tab = 't-req', accSel = null, pview = 0, anchor = null;
 
@@ -14,13 +14,13 @@
   const getP = (path, root) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), root || C());
   const setP = (path, v) => { const ks = path.split('.'), last = ks.pop(); const o = ks.reduce((x, k) => x[k], C()); o[last] = v; };
   const FMT = {
-    text: v => v ?? '', num: v => v ?? '', bool: v => !!v,
+    text: v => v ?? '', num: v => v ?? '', bool: v => !!v, date: v => v ?? '',
     lines: v => (v || []).join('\n'), paras: v => (v || []).join('\n\n'),
     pairs: v => (v || []).map(p => p.join(' | ')).join('\n'),
     nums: v => (v || []).map(n => `${n.valor} | ${n.rotulo}`).join('\n')
   };
   const PARSE = {
-    text: v => v, num: v => (v === '' ? null : Number(v)),
+    text: v => v, date: v => v, num: v => (v === '' ? null : Number(v)),
     lines: v => v.split('\n').map(s => s.trim()).filter(Boolean),
     paras: v => v.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean),
     pairs: v => v.split('\n').map(s => s.split('|').map(x => x.trim())).filter(p => p[0]).map(p => [p[0], p[1] || '']),
@@ -35,7 +35,7 @@
     if (o.select) return `<div class="ff${full}"><label>${esc(label)}</label><select data-path="${path}" data-kind="${o.num ? 'num' : 'text'}">${o.select.map(([k, n]) => `<option value="${esc(k)}" ${String(getP(path)) === String(k) ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>`;
     const multi = ['lines', 'paras', 'pairs', 'nums'].includes(kind) || o.area;
     const inp = multi ? `<textarea data-path="${path}" data-kind="${kind}" ${o.ph ? `placeholder="${esc(o.ph)}"` : ''} ${o.rows ? `rows="${o.rows}"` : ''}>${v}</textarea>`
-      : `<input type="${kind === 'num' ? 'number' : 'text'}" ${o.step ? `step="${o.step}"` : ''} data-path="${path}" data-kind="${kind}" value="${v}" ${o.ph ? `placeholder="${esc(o.ph)}"` : ''}>`;
+      : `<input type="${kind === 'num' ? 'number' : kind === 'date' ? 'date' : 'text'}" ${o.step ? `step="${o.step}"` : ''} data-path="${path}" data-kind="${kind}" value="${v}" ${o.ph ? `placeholder="${esc(o.ph)}"` : ''}>`;
     return `<div class="ff${full}"><label>${esc(label)}</label>${inp}${o.hint ? `<div class="hint" style="margin:4px 0 0">${esc(o.hint)}</div>` : ''}</div>`;
   }
 
@@ -68,6 +68,7 @@
     if (location.hash === '#painel') history.replaceState(null, '', location.pathname + location.search);
     CMV.renderPublic();
   };
+  CMV.onReviewsChanged = async () => { if (panel.classList.contains('open') && Store.auth.isLogged()) { CMV.REVIEWS = await Store.loadReviews(); if (tab === 't-rev') renderTab(); } };
   CMV.onRequestsChanged = async () => { if (panel.classList.contains('open') && Store.auth.isLogged()) { CMV.REQ = await Store.loadRequests(); if (tab === 't-req') renderTab(); } };
 
   function renderLogin() {
@@ -85,6 +86,7 @@
 
   async function enter() {
     try { CMV.REQ = await Promise.race([Store.loadRequests(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))]); } catch (e) { CMV.REQ = []; toast('Não foi possível carregar as solicitações'); }
+    try { CMV.REVIEWS = await Promise.race([Store.loadReviews(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))]); } catch (e) { CMV.REVIEWS = []; }
     if (!accSel || !CMV.byId(accSel)) accSel = (C().acomodacoes.find(a => a.status === 'ativo') || C().acomodacoes[0]).id;
     panel.innerHTML = `<div class="p-top"><div class="wrap"><div><b>Painel do proprietário</b><span class="pill${Store.mode === 'local' ? '' : ' ok'}">${Store.mode === 'local' ? 'MODO TESTE' : 'ONLINE'}</span></div>
         <div style="display:flex;gap:8px"><button class="out" id="ad-out">Sair</button><button class="out" id="ad-close">← Voltar ao site</button></div></div></div>
@@ -99,7 +101,7 @@
 
   function renderTab() {
     const body = $('#ad-body'); if (!body) return;
-    try { ({ 't-req': tReq, 't-cal': tCal, 't-price': tPrice, 't-acc': tAcc, 't-photos': tPhotos, 't-text': tText, 't-rev': tRev, 't-sys': tSys })[tab](body); }
+    try { ({ 't-req': tReq, 't-cal': tCal, 't-price': tPrice, 't-acc': tAcc, 't-photos': tPhotos, 't-text': tText, 't-guia': tGuia, 't-rev': tRev, 't-sys': tSys })[tab](body); }
     catch (e) { console.error(e); body.innerHTML = `<div class="empty">Não foi possível montar esta aba: ${esc(e.message)}</div>`; }
   }
 
@@ -289,6 +291,7 @@
         <div class="fg">
           ${F('Situação', base + '.status', { select: [['ativo', 'Ativo (aparece e aceita reservas)'], ['embreve', 'Em breve (aparece sem reserva)']] })}
           ${F('Tipo (etiqueta na foto)', base + '.tipo')}
+          ${F('Texto curto na faixa escura (ex.: para casais)', base + '.faixaSub')}
           ${F('Nome', base + '.nome')}
           ${F('Resumo (aparece no cartão)', base + '.resumo', { area: true })}
           ${F('Descrição (separe parágrafos com uma linha em branco)', base + '.descricao', { kind: 'paras', full: true, rows: 6 })}
@@ -357,7 +360,7 @@
         ${F('O lugar: linha pequena', 'site.sobreEyebrow')}${F('O lugar: título', 'site.sobreTitulo')}
         ${F('O lugar: textos (separe com linha em branco)', 'site.sobreParagrafos', { kind: 'paras', full: true, rows: 8 })}
         ${F('Assinatura', 'site.sobreAssinatura')}
-        ${F('Números (um por linha: valor | descrição)', 'site.numeros', { kind: 'nums', full: true })}
+        ${F('Itens extras da faixa escura (um por linha: Título | subtítulo)', 'site.faixaExtra', { kind: 'pairs', full: true, hint: 'As hospedagens e o “+N chalés a caminho” entram sozinhos nessa faixa.' })}
         ${F('Título das comodidades gerais', 'site.comodidadesTitulo')}
         ${F('Avaliações: título', 'site.depoimentosTitulo')}${F('Avaliações: texto', 'site.depoimentosLead', { full: true })}
         ${F('Como chegar: título', 'site.localTitulo')}${F('Como chegar: texto', 'site.localLead', { full: true, area: true })}
@@ -366,15 +369,62 @@
       <div class="sub-h" style="margin-top:22px">Comodidades gerais (todas as hospedagens)</div>${amenityRows('site.comodidades')}</div>`;
   }
 
+
+  /* ================= guia de Monte Verde ================= */
+  function listRows(base, fields, nomeItem) {
+    const list = getP(base) || [];
+    return list.map((it, i) => `<div class="card" style="margin-bottom:10px;padding:16px"><div class="fg">${fields.map(([k, l, o]) => F(l, `${base}.${i}.${k}`, o || {})).join('')}</div><div style="margin-top:10px"><button class="btn btn-line btn-sm danger" data-ld="${base}" data-i="${i}">Remover ${nomeItem}</button></div></div>`).join('');
+  }
+  function tGuia(body) {
+    const G = C().guia, hoje = TODAY;
+    const idx = (G.eventos || []).map((e, i) => i).sort((a, b) => G.eventos[a].ini.localeCompare(G.eventos[b].ini));
+    const fEv = [['ini', 'Início', { kind: 'date' }], ['fim', 'Fim (igual ao início se for um dia)', { kind: 'date' }], ['nome', 'Nome do evento', { full: true }], ['nota', 'Observação', { full: true }]];
+    const evRow = i => `<div class="card" style="margin-bottom:10px;padding:16px"><div class="fg">${fEv.map(([k, l, o]) => F(l, `guia.eventos.${i}.${k}`, o || {})).join('')}</div><div style="margin-top:10px"><button class="btn btn-line btn-sm danger" data-ld="guia.eventos" data-i="${i}">Remover evento</button></div></div>`;
+    const futuros = idx.filter(i => (G.eventos[i].fim || G.eventos[i].ini) >= hoje), passados = idx.filter(i => !futuros.includes(i));
+    body.innerHTML = `<div class="card"><div class="sub-h">Textos da seção</div><div class="fg">${F('Título (use *asteriscos* para destacar)', 'guia.titulo', { full: true })}${F('Texto de abertura', 'guia.lead', { full: true, area: true })}</div></div>
+      <div class="sub-h" style="margin-top:22px">O que fazer</div><p class="hint">Atrações, passeios, restaurantes e lojas. O campo “Grupo” agrupa os cartões (ex.: Natureza e trilhas, Gastronomia).</p>
+      ${listRows('guia.atracoes', [['cat', 'Grupo'], ['nome', 'Nome'], ['texto', 'Descrição', { full: true, area: true }], ['link', 'Link (opcional)', { full: true }]], 'item')}
+      <button class="btn btn-dark btn-sm" data-la="guia.atracoes">+ Adicionar atração</button>
+      <div class="sub-h" style="margin-top:26px">Calendário de eventos</div><p class="hint">O site mostra o mês atual e os futuros. Eventos de meses anteriores ficam guardados aqui e ocultos para os visitantes.</p>
+      ${futuros.map(evRow).join('') || '<p class="hint">Nenhum evento futuro.</p>'}
+      <button class="btn btn-dark btn-sm" data-la="guia.eventos">+ Adicionar evento</button>
+      ${passados.length ? `<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:600">Eventos passados, ocultos no site (${passados.length})</summary><div style="margin-top:10px">${passados.map(evRow).join('')}</div></details>` : ''}
+      <div class="card" style="margin-top:14px"><div class="fg">${F('Fonte (texto)', 'guia.eventosFonte.texto', { full: true })}${F('Fonte (link)', 'guia.eventosFonte.link', { full: true })}</div></div>
+      <div class="sub-h" style="margin-top:26px">Futuras atrações</div>
+      ${listRows('guia.futuras', [['nome', 'Nome'], ['link', 'Link (vídeo ou site)'], ['texto', 'Descrição', { full: true, area: true }]], 'item')}
+      <button class="btn btn-dark btn-sm" data-la="guia.futuras">+ Adicionar atração futura</button>`;
+  }
+  panel.addEventListener('click', e => {
+    const d = e.target.closest('[data-ld]'), a = e.target.closest('[data-la]');
+    if (d) { if (!confirm('Remover este item?')) return; getP(d.dataset.ld).splice(+d.dataset.i, 1); CMV.persist(); renderTab(); }
+    if (a) {
+      const t = { 'guia.atracoes': { cat: 'Natureza e trilhas', nome: '', texto: '', link: '' }, 'guia.eventos': { ini: TODAY, fim: TODAY, nome: '', nota: '' }, 'guia.futuras': { nome: '', texto: '', link: '' } }[a.dataset.la];
+      getP(a.dataset.la).push(t); CMV.persist(); renderTab();
+    }
+  });
+
   /* ================= depoimentos ================= */
   function tRev(body) {
     const opts = [['', '(geral)'], ...C().acomodacoes.map(a => [a.id, a.nome])];
-    body.innerHTML = `<p class="hint">Use apenas relatos reais, com autorização do hóspede. Mostre só o primeiro nome.</p>` + C().depoimentos.map((r, i) => `<div class="card" style="margin-bottom:12px"><div class="fg">
+    const pend = CMV.REVIEWS || [];
+    const nomeChale = id => { const a = CMV.byId(id); return a ? a.nome : 'Geral'; };
+    const pendHtml = `<div class="sub-h">Aguardando aprovação${pend.length ? ` (${pend.length})` : ''}</div>` + (pend.length ? pend.map(r => `<div class="card" style="margin-bottom:12px;border-left:4px solid var(--amber)"><p style="font-size:.8rem;color:#7c8a80;margin-bottom:6px"><b>${esc(r.nome)}</b> · ${esc(nomeChale(r.chale))} · ${'★'.repeat(r.estrelas || 5)} · enviado em ${esc((r.em || '').slice(0, 10).split('-').reverse().join('/'))}</p><p style="white-space:pre-wrap;margin-bottom:12px">${esc(r.texto)}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark btn-sm" data-rvok="${esc(r.id)}">Aprovar e publicar</button><button class="btn btn-line btn-sm danger" data-rvno="${esc(r.id)}">Rejeitar</button></div></div>`).join('') : '<p class="hint">Nenhuma avaliação aguardando. As avaliações enviadas pelos hóspedes aparecem aqui e só vão para o site depois que você aprovar.</p>') + '<div class="sub-h" style="margin-top:26px">Publicadas no site</div>';
+    body.innerHTML = pendHtml + `<p class="hint">Use apenas relatos reais, com autorização do hóspede. Mostre só o primeiro nome. Para incluir uma avaliação do Airbnb, use “Adicionar depoimento”.</p>` + C().depoimentos.map((r, i) => `<div class="card" style="margin-bottom:12px"><div class="fg">
         ${F('Nome (primeiro nome)', `depoimentos.${i}.nome`)}${F('Quando (ex.: agosto de 2026)', `depoimentos.${i}.quando`)}
         ${F('Hospedagem', `depoimentos.${i}.chale`, { select: opts })}${F('Estrelas (1 a 5)', `depoimentos.${i}.estrelas`, { select: [5, 4, 3, 2, 1].map(n => [n, '★'.repeat(n)]), num: true })}
         ${F('Texto', `depoimentos.${i}.texto`, { full: true, area: true })}</div>
         <div style="margin-top:12px"><button class="btn btn-line btn-sm danger" data-rv="${i}">Remover</button></div></div>`).join('') + '<button class="btn btn-dark btn-sm" id="rv-new">+ Adicionar depoimento</button>';
     $$$('[data-rv]', body).forEach(b => b.onclick = () => { if (!confirm('Remover este depoimento?')) return; C().depoimentos.splice(+b.dataset.rv, 1); CMV.persist(); renderTab(); });
+    $$$('[data-rvok]', body).forEach(b => b.onclick = async () => {
+      const r = (CMV.REVIEWS || []).find(x => x.id === b.dataset.rvok); if (!r) return;
+      const d = new Date(r.em || Date.now()), mes = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'][d.getMonth()];
+      C().depoimentos.unshift({ nome: r.nome, quando: `${mes} de ${d.getFullYear()}`, estrelas: r.estrelas || 5, chale: r.chale || '', texto: r.texto });
+      await Store.deleteReview(r.id); CMV.REVIEWS = CMV.REVIEWS.filter(x => x !== r); CMV.persist(); toast('Avaliação publicada'); renderTab();
+    });
+    $$$('[data-rvno]', body).forEach(b => b.onclick = async () => {
+      if (!confirm('Rejeitar e apagar esta avaliação?')) return;
+      await Store.deleteReview(b.dataset.rvno); CMV.REVIEWS = (CMV.REVIEWS || []).filter(x => x.id !== b.dataset.rvno); renderTab();
+    });
     $('#rv-new').onclick = () => { C().depoimentos.unshift({ nome: '', quando: '', estrelas: 5, chale: accSel, texto: '' }); CMV.persist(); renderTab(); };
   }
 

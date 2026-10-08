@@ -23,6 +23,7 @@
       <a href="#galeria">Galeria</a>
       <a href="#avaliacoes">Avaliações</a>
       <a href="#como-chegar">Como chegar</a>
+      <a href="#monte-verde">Monte Verde</a>
       <a href="#reservas" class="btn btn-amber">Reservar</a>
     </nav>
     <button class="burger" id="burger" aria-label="Abrir menu"><span></span></button>
@@ -54,7 +55,6 @@
     <div class="story-imgs rv">
       <img class="a" id="s-a" src="" alt="" data-par="0.05" loading="lazy">
       <img class="b" id="s-b" src="" alt="" loading="lazy">
-      <div class="badge" id="s-badge"></div>
     </div>
     <div class="rv d1">
       <div class="eyebrow" id="s-eyebrow"></div>
@@ -104,6 +104,8 @@
       <h2 id="r-titulo"></h2>
       <p class="lead" id="r-lead"></p>
       <div class="stars" style="margin-top:18px">★★★★★</div>
+      <button class="btn btn-ghost btn-sm" id="rev-open" style="margin-top:22px">Já se hospedou? Deixe sua avaliação</button>
+      <p class="src" style="max-width:36ch">As avaliações são publicadas após conferência da nossa equipe.</p>
     </div>
     <div class="rv d1">
       <div class="quote-box" id="qbox"></div>
@@ -158,6 +160,23 @@
   </div>
 </section>
 
+<!-- MONTE VERDE (guia, eventos, futuras atrações) -->
+<section id="monte-verde" class="pad light">
+  <div class="wrap">
+    <div class="eyebrow">Monte Verde</div>
+    <h2 id="g-titulo"></h2>
+    <p class="lead" id="g-lead"></p>
+    <div class="chips-f lt" id="g-tabs" role="tablist" style="margin-top:30px">
+      <button data-gt="o" class="on" role="tab">O que fazer</button>
+      <button data-gt="e" role="tab">Calendário de eventos</button>
+      <button data-gt="f" role="tab">Futuras atrações</button>
+    </div>
+    <div id="g-o" class="g-pane"></div>
+    <div id="g-e" class="g-pane" hidden></div>
+    <div id="g-f" class="g-pane" hidden></div>
+  </div>
+</section>
+
 <!-- FINAL -->
 <section class="final pad">
   <div class="bg" data-par="0.05"></div>
@@ -194,6 +213,21 @@
   <button class="btn wa-btn" id="mwa"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2a10 10 0 0 0-8.600 15L2 22l5.200-1.400A10 10 0 1 0 12 2z"/></svg>Enviar pedido pelo WhatsApp</button>
   <button class="btn btn-dark" id="mcopy">Copiar mensagem</button>
   <p class="fine">O pedido também fica registrado no painel do proprietário.</p>
+</div></div>
+
+<!-- enviar avaliação -->
+<div class="modal" id="mrev"><div class="box">
+  <button class="close" data-close-rev aria-label="Fechar">✕</button>
+  <h3>Sua avaliação</h3>
+  <p style="color:#5b6a60;font-size:.92rem">Conte como foi a sua estadia. Ela será publicada no site depois de conferida pela nossa equipe.</p>
+  <form id="rev-form" autocomplete="off">
+    <div class="f"><label for="rv-nome">Seu nome</label><input type="text" id="rv-nome" maxlength="60" required placeholder="Primeiro nome"></div>
+    <div class="f"><label for="rv-chale">Hospedagem</label><select id="rv-chale" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid #1d2b2528;font:inherit;margin-top:4px;background:#fffdf8"></select></div>
+    <div class="f"><label for="rv-estrelas">Nota</label><select id="rv-estrelas" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid #1d2b2528;font:inherit;margin-top:4px;background:#fffdf8"><option value="5">★★★★★ Excelente</option><option value="4">★★★★ Muito bom</option><option value="3">★★★ Bom</option><option value="2">★★ Regular</option><option value="1">★ Ruim</option></select></div>
+    <div class="f"><label for="rv-texto">Sua experiência</label><textarea id="rv-texto" rows="4" maxlength="800" required placeholder="O que você mais gostou?"></textarea></div>
+    <input type="text" id="rv-site" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
+    <button class="btn btn-amber" type="submit" style="width:100%;justify-content:center;margin-top:6px">Enviar avaliação</button>
+  </form>
 </div></div>
 
 <!-- painel do proprietário -->

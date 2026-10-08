@@ -7,6 +7,12 @@ Dê dois cliques em `index.html`, ou rode `python3 -m http.server` nesta pasta e
 Painel do proprietário: botão "Área do proprietário" no rodapé (ou `index.html#painel`).
 Senha do modo de teste: `monteverde`.
 
+## Avaliações de hóspedes
+O visitante envia pelo botão "Deixe sua avaliação"; ela fica **pendente** e só aparece no site depois de aprovada no
+painel (aba Depoimentos). Campo-isca e intervalo de 60 s contra robôs. No Firebase, a regra do Firestore deve permitir
+que qualquer visitante apenas **crie** avaliações com `status: 'pendente'` (sem ler, editar ou apagar), e só o
+proprietário autenticado aprove/apague.
+
 ## Estrutura
 - `js/defaults.js`: conteúdo inicial (textos, preços de exemplo, fotos). Ao mudar, aumente `DEFAULTS_VERSION`.
 - `js/store-local.js`: dados salvos no navegador (modo teste).

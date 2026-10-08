@@ -47,6 +47,10 @@
     async addRequest(r) { const l = await this.loadRequests(); l.unshift(r); await kvSet('requests', l); },
     async updateRequest(r) { const l = await this.loadRequests(); const i = l.findIndex(x => x.id === r.id); if (i >= 0) l[i] = r; await kvSet('requests', l); },
     async deleteRequest(id) { const l = (await this.loadRequests()).filter(x => x.id !== id); await kvSet('requests', l); },
+    // avaliações enviadas pelos hóspedes: ficam pendentes até o proprietário aprovar no painel
+    async addReview(r) { const l = (await kvGet('reviews')) || []; l.unshift(r); await kvSet('reviews', l); },
+    async loadReviews() { return (await kvGet('reviews')) || []; },
+    async deleteReview(id) { const l = ((await kvGet('reviews')) || []).filter(x => x.id !== id); await kvSet('reviews', l); },
     async reset() { await kvSet('content', null); },
 
     // Reduz a foto no navegador (lado maior 1600 px, JPEG 82%) e devolve como data URL.

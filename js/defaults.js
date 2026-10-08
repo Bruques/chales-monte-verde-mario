@@ -1,6 +1,6 @@
 /* Conteúdo inicial do site. Tudo aqui é editável pelo painel do proprietário.
    Valores de preço, WhatsApp e horários são FICTÍCIOS (prévia). */
-window.DEFAULTS_VERSION = 1;
+window.DEFAULTS_VERSION = 2;
 
 window.makeDefaults = function () {
   const pad = n => String(n).padStart(2, '0');
@@ -34,9 +34,9 @@ window.makeDefaults = function () {
       finalImg: 'img/chale-bordeaux/03.jpg',
       heroEyebrow: 'Monte Verde · Minas Gerais',
       heroTitulo: 'Entre araucárias, o *silêncio* da serra',
-      heroSub: 'Uma casa para até 12 pessoas e três chalés para casais, imersos na natureza de Monte Verde. Lareira, pôr do sol e céu estrelado.',
+      heroSub: 'O Chalé Master para até 12 pessoas e três chalés para casais, imersos na natureza de Monte Verde. Lareira, pôr do sol e céu estrelado.',
       heroBarra: [
-        ['4 hospedagens', 'casa e chalés'],
+        ['4 hospedagens', 'chalés e Chalé Master'],
         ['Casais ou grupos', 'de 2 a 12 pessoas'],
         ['Estacionamento', 'gratuito no local'],
         ['Reserva direta', 'com os anfitriões']
@@ -46,47 +46,45 @@ window.makeDefaults = function () {
       sobreTitulo: 'Um recanto entre as *araucárias*',
       sobreParagrafos: [
         'Em Monte Verde, cada época do ano traz cores e belezas próprias. Aqui, longe da poluição dos grandes centros, você acompanha o pôr do sol, o céu estrelado e o luar, e acorda ao som dos pássaros silvestres.',
-        'No mesmo terreno há uma casa para até 12 pessoas e três chalés para casais, todos entre araucárias, pássaros e esquilos, com estacionamento privativo dentro da propriedade.',
+        'No mesmo terreno há o Chalé Master, para até 12 pessoas, e três chalés para casais, todos entre araucárias, pássaros e esquilos, com estacionamento privativo dentro da propriedade.',
         'Para manter a diária mais leve, não oferecemos café da manhã nem roupa de cama e banho: você leva a sua. Fornecemos travesseiros, edredons e cobertores.'
       ],
       sobreAssinatura: 'Mário Bonafé Jr.',
       sobreFotoA: 'img/casa/05.jpg',
       sobreFotoB: 'img/chale-cote-dazur/01.jpg',
       fotosGerais: [{ src: 'img/geral/aerea.jpg', leg: 'Vista aérea da propriedade' }],
+      faixaExtra: [['Wi-Fi (Starlink)', '100 mbps']],
       numeros: [
-        { valor: 4, rotulo: 'hospedagens' },
-        { valor: 3, rotulo: 'chalés para casais' },
-        { valor: 12, rotulo: 'hóspedes na casa' },
-        { valor: 100, rotulo: 'Mbps de Wi-Fi na casa' }
+        { valor: 4, rotulo: 'hospedagens' }
       ],
       comodidadesTitulo: 'Em todas as hospedagens',
       comodidades: [
-        { ic: 'car', t: 'Estacionamento gratuito', d: 'Vagas privativas dentro do terreno, para hóspedes da casa e dos chalés.' },
+        { ic: 'car', t: 'Estacionamento gratuito', d: 'Vagas privativas dentro do terreno, para todos os hóspedes.' },
         { ic: 'wifi', t: 'Wi-Fi', d: 'Internet em todas as hospedagens.' },
         { ic: 'flame', t: 'Lareira e aquecimento', d: 'Lareira a lenha e aquecedores para as noites frias da serra.' },
         { ic: 'tv', t: 'TV com canais', d: 'TV com canais via satélite. Leve suas senhas de streaming.' },
         { ic: 'utensils', t: 'Cozinha equipada', d: 'Louças, talheres, micro-ondas, fogão ou cooktop e frigobar.' },
-        { ic: 'coffee', t: 'Cafeteira de cápsulas', d: 'Nespresso nas cozinhas da casa e dos chalés Côte d\'Azur e Bordeaux.' },
-        { ic: 'bath', t: 'Banheira de hidromassagem', d: 'Nos chalés Côte d\'Azur e Bordeaux. A casa tem banheira de imersão.' },
+        { ic: 'coffee', t: 'Cafeteira de cápsulas', d: 'Nespresso nas cozinhas do Chalé Master e dos chalés Côte d\'Azur e Bordeaux.' },
+        { ic: 'bath', t: 'Banheira de hidromassagem', d: 'Nos chalés Côte d\'Azur e Bordeaux. O Chalé Master tem banheira de imersão.' },
         { ic: 'shield', t: 'Segurança', d: 'Câmeras na área externa, detectores de fumaça e de monóxido de carbono.' }
       ],
       regras: [
         'Check-in a partir das 14:00 e check-out até as 12:00.',
         'Não fornecemos café da manhã nem roupa de cama e banho (travesseiros, edredons e cobertores são fornecidos).',
         'Chalés para casais: mínimo de 2 pessoas. A pedido, instalamos uma cama pequena ou berço.',
-        'Casa: de 1 a 12 hóspedes (valor calculado para 5 pessoas).',
-        'Casa e Chalet Paris: descontos para estadias semanais e mensais. Fale com a gente.'
+        'Chalé Master: de 1 a 12 hóspedes (valor calculado para 5 pessoas).',
+        'Chalé Master e Chalé Paris: descontos para estadias semanais e mensais. Fale com a gente.'
       ],
       localTitulo: 'Como *chegar*',
       localLead: 'Estamos em Monte Verde, distrito de Camanducaia (MG), na Serra da Mantiqueira. O centro fica a poucos minutos de carro.',
       finalTitulo: 'Sua próxima *pausa* na serra',
       depoimentosTitulo: 'Quem já passou por aqui',
-      depoimentosLead: 'Relatos de hóspedes que se hospedaram em nossa casa e nos chalés.'
+      depoimentosLead: 'Relatos de hóspedes que se hospedaram no Chalé Master e nos chalés.'
     },
 
     acomodacoes: [
       {
-        id: 'casa', status: 'ativo', nome: 'Casa', tipo: 'Casa para famílias e grupos',
+        id: 'casa', status: 'ativo', nome: 'Chalé Master', tipo: 'Chalé para famílias e grupos', faixaSub: 'para 1 a 12 hóspedes',
         resumo: 'Três quartos, sala com lareira, cozinha completa e área de lazer com churrasqueira, para até 12 pessoas.',
         descricao: [
           'Casa ampla, cercada por jardins e árvores, com acomodação para até 12 pessoas e possibilidade de instalar mais um berço ou cama para crianças nos quartos de casal.',
@@ -121,7 +119,7 @@ window.makeDefaults = function () {
         ocupado: ocupar([[5, 8], [19, 21], [33, 36], [47, 49]]), especial: {}
       },
       {
-        id: 'cote-dazur', status: 'ativo', nome: 'Chalé Côte d\'Azur', tipo: 'Chalé para casais',
+        id: 'cote-dazur', status: 'ativo', nome: 'Chalé Côte d\'Azur', tipo: 'Chalé para casais', faixaSub: 'para casais',
         resumo: 'Chalé com varanda, lareira e banheira de hidromassagem, entre as araucárias.',
         descricao: [
           'Chalé para casais com varanda, lareira, TV com canais via satélite e um amplo banheiro com banheira de hidromassagem, secador de cabelos e toalheiro elétrico.',
@@ -145,7 +143,7 @@ window.makeDefaults = function () {
         ocupado: ocupar([[3, 5], [12, 14], [26, 28], [40, 43]]), especial: {}
       },
       {
-        id: 'bordeaux', status: 'ativo', nome: 'Chalet Bordeaux', tipo: 'Chalé para casais',
+        id: 'bordeaux', status: 'ativo', nome: 'Chalé Bordeaux', tipo: 'Chalé para casais', faixaSub: 'para casais',
         resumo: 'Chalé aconchegante com lareira, hidromassagem e cozinha, cercado de mata.',
         descricao: [
           'Chalé para casais com varanda, lareira, aquecedor de ambiente, TV com canais via satélite e banheiro amplo com banheira de hidromassagem, secador de cabelos e toalheiro elétrico.',
@@ -169,7 +167,7 @@ window.makeDefaults = function () {
         ocupado: ocupar([[8, 10], [22, 24], [31, 33], [55, 58]]), especial: {}
       },
       {
-        id: 'paris', status: 'ativo', nome: 'Chalet Paris', tipo: 'Chalé para casais',
+        id: 'paris', status: 'ativo', nome: 'Chalé Paris', tipo: 'Chalé para casais', faixaSub: 'para casais',
         resumo: 'Chalé de tijolinho e madeira, com lareira, perto do centro e com desconto para estadias longas.',
         descricao: [
           'Chalé para casais com varanda, lareira, aquecedor, TV com canais via satélite e amplo banheiro com secador de cabelos e toalheiro elétrico. O quarto tem paredes de tijolinho e teto de madeira aparente.',
@@ -193,18 +191,61 @@ window.makeDefaults = function () {
         ocupado: ocupar([[6, 7], [16, 18], [29, 31], [44, 46]]), especial: {}
       },
       {
-        id: 'novo-1', status: 'embreve', nome: 'Novo chalé', tipo: 'Em construção',
+        id: 'novo-1', status: 'embreve', faixaSub: '', nome: 'Novo chalé', tipo: 'Em construção',
         resumo: 'Mais um chalé para casais a caminho. Em breve, aqui.',
         descricao: [], destaques: [], capMin: 2, capMax: 2, camaExtra: true, obsPreco: '',
         precos: { semana: null, fim: null, min: 2 }, comodidades: [], fotos: [], ocupado: {}, especial: {}
       },
       {
-        id: 'novo-2', status: 'embreve', nome: 'Novo chalé', tipo: 'Em construção',
+        id: 'novo-2', status: 'embreve', faixaSub: '', nome: 'Novo chalé', tipo: 'Em construção',
         resumo: 'Mais um chalé para casais a caminho. Em breve, aqui.',
         descricao: [], destaques: [], capMin: 2, capMax: 2, camaExtra: true, obsPreco: '',
         precos: { semana: null, fim: null, min: 2 }, comodidades: [], fotos: [], ocupado: {}, especial: {}
       }
     ],
+
+    guia: {
+      titulo: 'Aproveite *Monte Verde*',
+      lead: 'Sugestões de passeios, o calendário de eventos da cidade e o que vem por aí. Nossa equipe pode indicar roteiros e horários.',
+      atracoes: [
+        { cat: 'Natureza e trilhas', nome: 'Pedra Redonda', texto: 'Trilha curta até um mirante com vista panorâmica da Serra da Mantiqueira.', link: '' },
+        { cat: 'Natureza e trilhas', nome: 'Pedra do Cachorro', texto: 'Mirante com vistas panorâmicas da região e trilhas em meio à natureza.', link: '' },
+        { cat: 'Natureza e trilhas', nome: 'Cachoeira dos Pretos', texto: 'Uma das maiores cachoeiras da região, boa para banho e piquenique. Fica a cerca de 30 km do centro.', link: '' },
+        { cat: 'Aventura', nome: 'Tirolesas, quadriciclos, jipes e cavalgadas', texto: 'Passeios de aventura e contato com a natureza para toda a família.', link: '' },
+        { cat: 'Aventura', nome: 'Patinação no gelo e Ice Bar', texto: 'Atrações geladas no meio da serra: pista de patinação e um bar feito de gelo.', link: '' },
+        { cat: 'Gastronomia', nome: 'Avenida Monte Verde', texto: 'O coração do distrito: restaurantes, cafeterias, chocolates quentes, fondue e lojinhas de artesanato.', link: '' },
+        { cat: 'Gastronomia', nome: 'Cervejas artesanais', texto: 'Monte Verde tem cervejarias com visitação e degustação, como a Fritz.', link: '' },
+        { cat: 'Compras e passeios', nome: 'Orquidário e lojas', texto: 'Orquidário com espécies raras e comércio de artesanato, malhas e produtos locais.', link: '' }
+      ],
+      eventos: [
+        { ini: '2026-01-01', fim: '2026-02-02', nome: 'Natal nas Montanhas: Contando histórias do Advento / Tempo de Esperança', nota: 'Decoração natalina, apresentações artísticas e musicais' },
+        { ini: '2026-01-09', fim: '2026-01-09', nome: 'Pedal Luz', nota: 'Passeio de bike noturno' },
+        { ini: '2026-02-22', fim: '2026-02-22', nome: 'Esporte nas Montanhas', nota: 'Passeio de bike e corrida, adulto e kids' },
+        { ini: '2026-03-01', fim: '2026-04-05', nome: 'Páscoa nas Montanhas', nota: 'Decoração temática e espaços instagramáveis' },
+        { ini: '2026-04-11', fim: '2026-04-11', nome: '7 Picos: Corrida nas Montanhas', nota: 'Competição' },
+        { ini: '2026-04-17', fim: '2026-04-17', nome: '1ª Etapa Copa Kids', nota: 'Trail Running e MTB' },
+        { ini: '2026-04-26', fim: '2026-04-26', nome: 'Clássicos nas Montanhas 2026', nota: 'Exposição de carros antigos e shows' },
+        { ini: '2026-05-14', fim: '2026-06-20', nome: 'Amor nas Montanhas', nota: 'Decoração temática' },
+        { ini: '2026-06-27', fim: '2026-08-02', nome: 'Inverno nas Montanhas', nota: 'Apresentações artísticas' },
+        { ini: '2026-08-23', fim: '2026-08-23', nome: 'Tour na Roça 2026', nota: 'Competição de bike' },
+        { ini: '2026-08-28', fim: '2026-08-30', nome: 'Monte Verde Bike Fest 2026', nota: 'Encontro de motos com shows' },
+        { ini: '2026-09-01', fim: '2026-09-27', nome: 'Gastronomia nas Montanhas', nota: 'Participantes do Prepara Gastronomia' },
+        { ini: '2026-09-06', fim: '2026-09-06', nome: 'Corrida Bauer', nota: 'Competição' },
+        { ini: '2026-09-12', fim: '2026-09-12', nome: '3ª edição Circuito Corrida Cervejeira', nota: 'Passeio' },
+        { ini: '2026-09-25', fim: '2026-09-27', nome: 'Feira Gastronômica', nota: 'Stands, cozinha show e shows musicais' },
+        { ini: '2026-09-27', fim: '2026-09-27', nome: '2ª Etapa Copa Kids', nota: 'Trail Running e MTB' },
+        { ini: '2026-10-02', fim: '2026-10-11', nome: 'Semana Bauer', nota: 'Arte e cultura' },
+        { ini: '2026-10-16', fim: '2026-10-18', nome: 'Monte Verde Fest Car', nota: 'Encontro de carros rebaixados' },
+        { ini: '2026-10-18', fim: '2026-10-18', nome: '2º Pedal nas Montanhas', nota: 'Competição MTB' },
+        { ini: '2026-11-08', fim: '2026-11-08', nome: '3ª Etapa Copa Kids', nota: 'Trail Running e MTB em Camanducaia' },
+        { ini: '2026-11-13', fim: '2027-01-31', nome: 'Natal nas Montanhas: Contando histórias', nota: 'Decoração natalina, apresentações artísticas e musicais' },
+        { ini: '2026-11-16', fim: '2026-11-18', nome: '2ª Feira Nacional dos Destinos Turísticos de Montanha e Inverno e 4º Seminário Move de Desenvolvimento Sustentável do Turismo de Monte Verde', nota: '' }
+      ],
+      eventosFonte: { texto: 'Fonte: calendário de eventos 2026 de Monte Verde (monteverde.org.br)', link: 'https://monteverde.org.br/wp-content/uploads/2026/01/CALENDARIO-MV-26.pdf' },
+      futuras: [
+        { nome: 'Park Pulso', texto: 'Futura atração em Monte Verde. Veja o vídeo.', link: 'https://www.tiktok.com/@parkpulso/video/7684355968251055380' }
+      ]
+    },
 
     depoimentos: [
       { nome: 'Lidiane', quando: 'agosto de 2026', estrelas: 5, chale: 'cote-dazur', texto: 'Dei de presente de aniversário para meu esposo um final de semana em Monte Verde e o chalé só acrescentou, e muito, na nossa experiência. Supera as expectativas do anúncio, o entorno da residência é uma delícia e todos foram extremamente gentis e atenciosos.' },

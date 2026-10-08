@@ -104,13 +104,8 @@
     $('#s-titulo').innerHTML = em(S.sobreTitulo);
     $('#s-paras').innerHTML = S.sobreParagrafos.map(p => `<p>${esc(p)}</p>`).join('');
     $('#s-sign').textContent = S.sobreAssinatura || '';
-    const soon = C.acomodacoes.filter(a => a.status === 'embreve').length;
-    const badge = $('#s-badge');
-    badge.style.display = soon ? '' : 'none';
-    badge.innerHTML = `<i><b>+${soon}</b>${soon > 1 ? 'chalés a caminho' : 'chalé a caminho'}</i>`;
+    renderFaixa();
 
-    $('#stats').style.setProperty('--cols', S.numeros.length);
-    $('#stats').innerHTML = S.numeros.map((n, i) => `<div class="stat rv${i ? ' d' + Math.min(i, 3) : ''}"><b data-count="${n.valor}">0</b><span>${esc(n.rotulo)}</span></div>`).join('');
 
     $('#am-titulo').innerHTML = em(S.comodidadesTitulo.replace(/(\S+)$/, '*$1*'));
     $('#am').innerHTML = S.comodidades.map((a, k) => `<div class="am rv d${k % 4}">${svg(a.ic)}<b>${esc(a.t)}</b><span>${esc(a.d)}</span></div>`).join('');
@@ -142,6 +137,51 @@
     $('#foot-links').innerHTML = links.join('');
     $('#demo-note').style.display = S.faixaPrevia ? '' : 'none';
     $('#pet-wrap').style.display = S.aceitaPet ? '' : 'none';
+  }
+
+  /* ---------- faixa escura: hospedagens, novidades e internet ---------- */
+  function renderFaixa() {
+    const S = C.site, items = act().map(a => [a.nome, a.faixaSub || (a.capMin === a.capMax ? 'para ' + (a.capMax === 2 ? 'casais' : a.capMax + ' pessoas') : `para ${a.capMin} a ${a.capMax} hóspedes`)]);
+    const soon = C.acomodacoes.filter(a => a.status === 'embreve').length;
+    if (soon) items.push([`+${soon} ${soon > 1 ? 'chalés' : 'chalé'}`, 'a caminho']);
+    (S.faixaExtra || []).forEach(p => items.push(p));
+    const box = $('#stats');
+    box.innerHTML = items.map(([t, d], i) => `<div class="stat rv${i ? ' d' + Math.min(i, 3) : ''}"><b>${esc(t)}</b><span>${esc(d)}</span></div>`).join('');
+  }
+
+  /* ---------- guia de Monte Verde ---------- */
+  const fmtD = (iso0, withYear) => { const [y, m, d] = iso0.split('-'); return `${d}/${m}${withYear ? '/' + y.slice(2) : ''}`; };
+  function periodo(e) {
+    if (!e.fim || e.fim === e.ini) return fmtD(e.ini);
+    const [y1, m1] = e.ini.split('-'), [y2, m2, d2] = e.fim.split('-');
+    if (y1 === y2 && m1 === m2) return `${e.ini.split('-')[2]} a ${d2}/${m2}`;
+    return `${fmtD(e.ini)} a ${fmtD(e.fim, y1 !== y2)}`;
+  }
+  // meses a mostrar: do mês atual em diante; meses anteriores ficam guardados mas ocultos
+  function eventosPorMes() {
+    const hoje = new Date(), m0 = iso(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+    const ev = (C.guia.eventos || []).filter(e => e.ini && (e.fim || e.ini) >= m0).sort((a, b) => a.ini.localeCompare(b.ini));
+    const meses = [];
+    ev.forEach(e => {
+      let [y, m] = [Number(e.ini.slice(0, 4)), Number(e.ini.slice(5, 7))];
+      const [y0, mm0] = [hoje.getFullYear(), hoje.getMonth() + 1];
+      if (y < y0 || (y === y0 && m < mm0)) { y = y0; m = mm0; }
+      // evento de vários meses aparece uma vez só: no mês em que começa (ou no mês atual, se já começou)
+      const key = `${y}-${pad(m)}`; let g = meses.find(x => x.key === key);
+      if (!g) { g = { key, y, m, itens: [] }; meses.push(g); }
+      g.itens.push(e);
+    });
+    return meses.sort((a, b) => a.key.localeCompare(b.key));
+  }
+  function renderGuia() {
+    const G = C.guia; if (!G) return;
+    $('#g-titulo').innerHTML = em(G.titulo); $('#g-lead').textContent = G.lead;
+    const cats = [...new Set((G.atracoes || []).map(a => a.cat || 'Outros'))];
+    $('#g-o').innerHTML = cats.map(c => `<h3 class="g-cat">${esc(c)}</h3><div class="g-grid">${(G.atracoes || []).filter(a => (a.cat || 'Outros') === c).map(a => `<article class="g-card"><h4>${esc(a.nome)}</h4><p>${esc(a.texto)}</p>${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener">Saiba mais →</a>` : ''}</article>`).join('')}</div>`).join('') || '<p class="lead">Em breve.</p>';
+    const meses = eventosPorMes();
+    $('#g-e').innerHTML = (meses.map(g => `<div class="g-mes"><h3>${MONTHS[g.m - 1]} <small>${g.y}</small></h3><ul>${g.itens.map(e => `<li><b>${esc(periodo(e))}</b><span><strong>${esc(e.nome)}</strong>${e.nota ? `<em>${esc(e.nota)}</em>` : ''}</span></li>`).join('')}</ul></div>`).join('') || '<p class="lead">Nenhum evento cadastrado para os próximos meses.</p>')
+      + (G.eventosFonte && G.eventosFonte.texto ? `<p class="note">${G.eventosFonte.link ? `<a href="${esc(G.eventosFonte.link)}" target="_blank" rel="noopener" style="text-decoration:underline">${esc(G.eventosFonte.texto)}</a>` : esc(G.eventosFonte.texto)}. Datas sujeitas a alteração.</p>` : '');
+    $('#g-f').innerHTML = (G.futuras || []).length ? `<div class="g-grid">${G.futuras.map(a => `<article class="g-card"><h4>${esc(a.nome)}</h4><p>${esc(a.texto)}</p>${a.link ? `<a class="btn btn-dark btn-sm" href="${esc(a.link)}" target="_blank" rel="noopener">Ver novidade</a>` : ''}</article>`).join('')}</div>` : '<p class="lead">Em breve.</p>';
   }
 
   function renderAcc() {
@@ -304,9 +344,29 @@
     if (CMV.onRequestsChanged) CMV.onRequestsChanged();
   }
 
+  /* ---------- envio de avaliação (publicada só depois de aprovada no painel) ---------- */
+  function openReview() {
+    $('#rv-chale').innerHTML = act().map(a => `<option value="${esc(a.id)}">${esc(a.nome)}</option>`).join('');
+    $('#mrev').classList.add('open');
+  }
+  async function sendReview(e) {
+    e.preventDefault();
+    if ($('#rv-site').value) return; // campo-isca: robôs preenchem
+    const nome = $('#rv-nome').value.trim(), texto = $('#rv-texto').value.trim();
+    if (!nome || !texto) { toast('Preencha o nome e a sua experiência'); return; }
+    let ultimo = 0; try { ultimo = Number(localStorage.getItem('cmv_ultima_avaliacao') || 0); } catch (err) { /* sem storage */ }
+    if (Date.now() - ultimo < 60000) { toast('Aguarde um instante antes de enviar outra avaliação'); return; }
+    const r = { id: String(Date.now()), nome: nome.slice(0, 60), chale: $('#rv-chale').value, estrelas: Number($('#rv-estrelas').value) || 5, texto: texto.slice(0, 800), status: 'pendente', em: new Date().toISOString() };
+    try { await Store.addReview(r); } catch (err) { toast('Não foi possível enviar agora. Tente de novo mais tarde.'); return; }
+    try { localStorage.setItem('cmv_ultima_avaliacao', String(Date.now())); } catch (err) { /* ignora */ }
+    $('#rev-form').reset(); $('#mrev').classList.remove('open');
+    toast('Obrigado! Sua avaliação será publicada após conferência.');
+    if (CMV.onReviewsChanged) CMV.onReviewsChanged();
+  }
+
   /* ================= render geral ================= */
   function renderAll() {
-    renderSite(); renderAcc(); renderGal(); renderRev();
+    renderSite(); renderAcc(); renderGal(); renderRev(); renderGuia();
     const keep = A && A.status === 'ativo' && byId(A.id) ? A.id : null;
     if (keep) { A = byId(keep); renderPick(); renderPublicCal(); } else selectAcc(act()[0] && act()[0].id);
     watch(); $$('[data-count]').forEach(el => cio.observe(el));
@@ -339,6 +399,9 @@
       const d = t.closest('[data-d]'); if (d) { openDetail(d.dataset.d); return; }
       const r = t.closest('[data-r]'); if (r) { closeDetail(); selectAcc(r.dataset.r); $('#reservas').scrollIntoView({ behavior: 'smooth' }); return; }
       const p = t.closest('[data-p]'); if (p) { selectAcc(p.dataset.p); return; }
+      const gt = t.closest('[data-gt]'); if (gt) { $$('#g-tabs button').forEach(b => b.classList.toggle('on', b === gt)); ['o', 'e', 'f'].forEach(k => { $('#g-' + k).hidden = k !== gt.dataset.gt; }); return; }
+      if (t.closest('#rev-open')) { openReview(); return; }
+      if (t.closest('[data-close-rev]') || t === $('#mrev')) { $('#mrev').classList.remove('open'); return; }
       const gf = t.closest('[data-gf]'); if (gf) { galFilter = gf.dataset.gf; renderGal(); return; }
       const q = t.closest('[data-q]'); if (q) { showQ(+q.dataset.q); return; }
       if (t.closest('[data-wa]')) { e.preventDefault(); openWA(`Olá! Vi o site do ${C.site.nome} e gostaria de mais informações.`); return; }
@@ -353,6 +416,7 @@
     $('#g-m').onclick = () => { guests = Math.max(A.capMin, guests - 1); renderSummary(); };
     $('#g-p').onclick = () => { guests = Math.min(A.capMax, guests + 1); renderSummary(); };
     $('#send').onclick = sendRequest;
+    $('#rev-form').addEventListener('submit', sendReview);
     $('#mwa').onclick = () => openWA(lastMsg);
     $('#mcopy').onclick = () => { try { navigator.clipboard.writeText(lastMsg); toast('Mensagem copiada'); } catch (e) { toast('Não foi possível copiar'); } };
     $$('[data-close]').forEach(b => b.onclick = () => $('#mconf').classList.remove('open'));
