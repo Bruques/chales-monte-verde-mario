@@ -259,6 +259,8 @@
     qd.innerHTML = REV.map((_, i) => `<button class="${i ? '' : 'on'}" data-q="${i}" aria-label="Avaliação ${i + 1}"></button>`).join('');
     clearInterval(qt); if (REV.length > 1) qt = setInterval(() => showQ((qi + 1) % REV.length), 7000);
     $('#avaliacoes').style.display = REV.length ? '' : 'none';
+    const gl = (window.CMV_CONFIG || {}).googleReviewUrl, rl = $('#rev-link');
+    if (rl) { rl.hidden = !gl; if (gl) rl.href = gl; }
   }
   const showQ = i => { qi = i; $$('#qbox .q').forEach((q, k) => q.classList.toggle('on', k === i)); $$('#qdots button').forEach((b, k) => b.classList.toggle('on', k === i)); };
 
@@ -344,26 +346,6 @@
     if (CMV.onRequestsChanged) CMV.onRequestsChanged();
   }
 
-  /* ---------- envio de avaliação (publicada só depois de aprovada no painel) ---------- */
-  function openReview() {
-    $('#rv-chale').innerHTML = act().map(a => `<option value="${esc(a.id)}">${esc(a.nome)}</option>`).join('');
-    $('#mrev').classList.add('open');
-  }
-  async function sendReview(e) {
-    e.preventDefault();
-    if ($('#rv-site').value) return; // campo-isca: robôs preenchem
-    const nome = $('#rv-nome').value.trim(), texto = $('#rv-texto').value.trim();
-    if (!nome || !texto) { toast('Preencha o nome e a sua experiência'); return; }
-    let ultimo = 0; try { ultimo = Number(localStorage.getItem('cmv_ultima_avaliacao') || 0); } catch (err) { /* sem storage */ }
-    if (Date.now() - ultimo < 60000) { toast('Aguarde um instante antes de enviar outra avaliação'); return; }
-    const r = { id: String(Date.now()), nome: nome.slice(0, 60), chale: $('#rv-chale').value, estrelas: Number($('#rv-estrelas').value) || 5, texto: texto.slice(0, 800), status: 'pendente', em: new Date().toISOString() };
-    try { await Store.addReview(r); } catch (err) { toast('Não foi possível enviar agora. Tente de novo mais tarde.'); return; }
-    try { localStorage.setItem('cmv_ultima_avaliacao', String(Date.now())); } catch (err) { /* ignora */ }
-    $('#rev-form').reset(); $('#mrev').classList.remove('open');
-    toast('Obrigado! Sua avaliação será publicada após conferência.');
-    if (CMV.onReviewsChanged) CMV.onReviewsChanged();
-  }
-
   /* ================= render geral ================= */
   function renderAll() {
     renderSite(); renderAcc(); renderGal(); renderRev(); renderGuia();
@@ -400,8 +382,6 @@
       const r = t.closest('[data-r]'); if (r) { closeDetail(); selectAcc(r.dataset.r); $('#reservas').scrollIntoView({ behavior: 'smooth' }); return; }
       const p = t.closest('[data-p]'); if (p) { selectAcc(p.dataset.p); return; }
       const gt = t.closest('[data-gt]'); if (gt) { $$('#g-tabs button').forEach(b => b.classList.toggle('on', b === gt)); ['o', 'e', 'f'].forEach(k => { $('#g-' + k).hidden = k !== gt.dataset.gt; }); return; }
-      if (t.closest('#rev-open')) { openReview(); return; }
-      if (t.closest('[data-close-rev]') || t === $('#mrev')) { $('#mrev').classList.remove('open'); return; }
       const gf = t.closest('[data-gf]'); if (gf) { galFilter = gf.dataset.gf; renderGal(); return; }
       const q = t.closest('[data-q]'); if (q) { showQ(+q.dataset.q); return; }
       if (t.closest('[data-wa]')) { e.preventDefault(); openWA(`Olá! Vi o site do ${C.site.nome} e gostaria de mais informações.`); return; }
@@ -416,7 +396,6 @@
     $('#g-m').onclick = () => { guests = Math.max(A.capMin, guests - 1); renderSummary(); };
     $('#g-p').onclick = () => { guests = Math.min(A.capMax, guests + 1); renderSummary(); };
     $('#send').onclick = sendRequest;
-    $('#rev-form').addEventListener('submit', sendReview);
     $('#mwa').onclick = () => openWA(lastMsg);
     $('#mcopy').onclick = () => { try { navigator.clipboard.writeText(lastMsg); toast('Mensagem copiada'); } catch (e) { toast('Não foi possível copiar'); } };
     $$('[data-close]').forEach(b => b.onclick = () => $('#mconf').classList.remove('open'));

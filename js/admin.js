@@ -7,8 +7,9 @@
 
   const FOTOS = !!(window.CMV_CONFIG && window.CMV_CONFIG.editarFotos);
   const TABS = [['t-req', 'Solicitações'], ['t-cal', 'Calendário'], ['t-price', 'Preços'], ['t-acc', 'Hospedagens'], ['t-photos', 'Fotos do site'], ['t-text', 'Textos e contato'], ['t-guia', 'Monte Verde'], ['t-rev', 'Depoimentos'], ['t-sys', 'Sistema']];
-  if (!FOTOS) { const i = TABS.findIndex(t => t[0] === 't-photos'); if (i >= 0) TABS.splice(i, 1); }
-  let tab = 't-req', accSel = null, pview = 0, anchor = null;
+  const PERMITIDAS = (window.CMV_CONFIG && window.CMV_CONFIG.abasPainel) || TABS.map(t => t[0]);
+  for (let i = TABS.length - 1; i >= 0; i--) if (!PERMITIDAS.includes(TABS[i][0]) || (TABS[i][0] === 't-photos' && !FOTOS)) TABS.splice(i, 1);
+  let tab = TABS[0][0], accSel = null, pview = 0, anchor = null;
 
   /* ---------- acesso por caminho (ex.: "acomodacoes.0.precos.semana") ---------- */
   const getP = (path, root) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), root || C());
@@ -68,7 +69,6 @@
     if (location.hash === '#painel') history.replaceState(null, '', location.pathname + location.search);
     CMV.renderPublic();
   };
-  CMV.onReviewsChanged = async () => { if (panel.classList.contains('open') && Store.auth.isLogged()) { CMV.REVIEWS = await Store.loadReviews(); if (tab === 't-rev') renderTab(); } };
   CMV.onRequestsChanged = async () => { if (panel.classList.contains('open') && Store.auth.isLogged()) { CMV.REQ = await Store.loadRequests(); if (tab === 't-req') renderTab(); } };
 
   function renderLogin() {
@@ -86,7 +86,6 @@
 
   async function enter() {
     try { CMV.REQ = await Promise.race([Store.loadRequests(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))]); } catch (e) { CMV.REQ = []; toast('Não foi possível carregar as solicitações'); }
-    try { CMV.REVIEWS = await Promise.race([Store.loadReviews(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))]); } catch (e) { CMV.REVIEWS = []; }
     if (!accSel || !CMV.byId(accSel)) accSel = (C().acomodacoes.find(a => a.status === 'ativo') || C().acomodacoes[0]).id;
     panel.innerHTML = `<div class="p-top"><div class="wrap"><div><b>Painel do proprietário</b><span class="pill${Store.mode === 'local' ? '' : ' ok'}">${Store.mode === 'local' ? 'MODO TESTE' : 'ONLINE'}</span></div>
         <div style="display:flex;gap:8px"><button class="out" id="ad-out">Sair</button><button class="out" id="ad-close">← Voltar ao site</button></div></div></div>
@@ -406,25 +405,12 @@
   /* ================= depoimentos ================= */
   function tRev(body) {
     const opts = [['', '(geral)'], ...C().acomodacoes.map(a => [a.id, a.nome])];
-    const pend = CMV.REVIEWS || [];
-    const nomeChale = id => { const a = CMV.byId(id); return a ? a.nome : 'Geral'; };
-    const pendHtml = `<div class="sub-h">Aguardando aprovação${pend.length ? ` (${pend.length})` : ''}</div>` + (pend.length ? pend.map(r => `<div class="card" style="margin-bottom:12px;border-left:4px solid var(--amber)"><p style="font-size:.8rem;color:#7c8a80;margin-bottom:6px"><b>${esc(r.nome)}</b> · ${esc(nomeChale(r.chale))} · ${'★'.repeat(r.estrelas || 5)} · enviado em ${esc((r.em || '').slice(0, 10).split('-').reverse().join('/'))}</p><p style="white-space:pre-wrap;margin-bottom:12px">${esc(r.texto)}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark btn-sm" data-rvok="${esc(r.id)}">Aprovar e publicar</button><button class="btn btn-line btn-sm danger" data-rvno="${esc(r.id)}">Rejeitar</button></div></div>`).join('') : '<p class="hint">Nenhuma avaliação aguardando. As avaliações enviadas pelos hóspedes aparecem aqui e só vão para o site depois que você aprovar.</p>') + '<div class="sub-h" style="margin-top:26px">Publicadas no site</div>';
-    body.innerHTML = pendHtml + `<p class="hint">Use apenas relatos reais, com autorização do hóspede. Mostre só o primeiro nome. Para incluir uma avaliação do Airbnb, use “Adicionar depoimento”.</p>` + C().depoimentos.map((r, i) => `<div class="card" style="margin-bottom:12px"><div class="fg">
+    body.innerHTML = `<p class="hint">Use apenas relatos reais, com autorização do hóspede. Mostre só o primeiro nome.</p>` + C().depoimentos.map((r, i) => `<div class="card" style="margin-bottom:12px"><div class="fg">
         ${F('Nome (primeiro nome)', `depoimentos.${i}.nome`)}${F('Quando (ex.: agosto de 2026)', `depoimentos.${i}.quando`)}
         ${F('Hospedagem', `depoimentos.${i}.chale`, { select: opts })}${F('Estrelas (1 a 5)', `depoimentos.${i}.estrelas`, { select: [5, 4, 3, 2, 1].map(n => [n, '★'.repeat(n)]), num: true })}
         ${F('Texto', `depoimentos.${i}.texto`, { full: true, area: true })}</div>
         <div style="margin-top:12px"><button class="btn btn-line btn-sm danger" data-rv="${i}">Remover</button></div></div>`).join('') + '<button class="btn btn-dark btn-sm" id="rv-new">+ Adicionar depoimento</button>';
     $$$('[data-rv]', body).forEach(b => b.onclick = () => { if (!confirm('Remover este depoimento?')) return; C().depoimentos.splice(+b.dataset.rv, 1); CMV.persist(); renderTab(); });
-    $$$('[data-rvok]', body).forEach(b => b.onclick = async () => {
-      const r = (CMV.REVIEWS || []).find(x => x.id === b.dataset.rvok); if (!r) return;
-      const d = new Date(r.em || Date.now()), mes = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'][d.getMonth()];
-      C().depoimentos.unshift({ nome: r.nome, quando: `${mes} de ${d.getFullYear()}`, estrelas: r.estrelas || 5, chale: r.chale || '', texto: r.texto });
-      await Store.deleteReview(r.id); CMV.REVIEWS = CMV.REVIEWS.filter(x => x !== r); CMV.persist(); toast('Avaliação publicada'); renderTab();
-    });
-    $$$('[data-rvno]', body).forEach(b => b.onclick = async () => {
-      if (!confirm('Rejeitar e apagar esta avaliação?')) return;
-      await Store.deleteReview(b.dataset.rvno); CMV.REVIEWS = (CMV.REVIEWS || []).filter(x => x.id !== b.dataset.rvno); renderTab();
-    });
     $('#rv-new').onclick = () => { C().depoimentos.unshift({ nome: '', quando: '', estrelas: 5, chale: accSel, texto: '' }); CMV.persist(); renderTab(); };
   }
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=202610081501">
 </head>
 <body>
 
@@ -104,8 +104,7 @@
       <h2 id="r-titulo"></h2>
       <p class="lead" id="r-lead"></p>
       <div class="stars" style="margin-top:18px">★★★★★</div>
-      <button class="btn btn-ghost btn-sm" id="rev-open" style="margin-top:22px">Já se hospedou? Deixe sua avaliação</button>
-      <p class="src" style="max-width:36ch">As avaliações são publicadas após conferência da nossa equipe.</p>
+      <a class="btn btn-ghost btn-sm" id="rev-link" href="#" target="_blank" rel="noopener" hidden style="margin-top:22px">Já se hospedou? Avalie no Google</a>
     </div>
     <div class="rv d1">
       <div class="quote-box" id="qbox"></div>
@@ -215,31 +214,16 @@
   <p class="fine">O pedido também fica registrado no painel do proprietário.</p>
 </div></div>
 
-<!-- enviar avaliação -->
-<div class="modal" id="mrev"><div class="box">
-  <button class="close" data-close-rev aria-label="Fechar">✕</button>
-  <h3>Sua avaliação</h3>
-  <p style="color:#5b6a60;font-size:.92rem">Conte como foi a sua estadia. Ela será publicada no site depois de conferida pela nossa equipe.</p>
-  <form id="rev-form" autocomplete="off">
-    <div class="f"><label for="rv-nome">Seu nome</label><input type="text" id="rv-nome" maxlength="60" required placeholder="Primeiro nome"></div>
-    <div class="f"><label for="rv-chale">Hospedagem</label><select id="rv-chale" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid #1d2b2528;font:inherit;margin-top:4px;background:#fffdf8"></select></div>
-    <div class="f"><label for="rv-estrelas">Nota</label><select id="rv-estrelas" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid #1d2b2528;font:inherit;margin-top:4px;background:#fffdf8"><option value="5">★★★★★ Excelente</option><option value="4">★★★★ Muito bom</option><option value="3">★★★ Bom</option><option value="2">★★ Regular</option><option value="1">★ Ruim</option></select></div>
-    <div class="f"><label for="rv-texto">Sua experiência</label><textarea id="rv-texto" rows="4" maxlength="800" required placeholder="O que você mais gostou?"></textarea></div>
-    <input type="text" id="rv-site" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
-    <button class="btn btn-amber" type="submit" style="width:100%;justify-content:center;margin-top:6px">Enviar avaliação</button>
-  </form>
-</div></div>
-
 <!-- painel do proprietário -->
 <div class="panel" id="panel"></div>
 
 <div class="toast" id="toast"></div>
 
-<script src="js/defaults.js"></script>
-<script src="js/config.js"></script>
-<script src="js/store-local.js"></script>
-<script src="js/app.js"></script>
-<script src="js/admin.js"></script>
+<script src="js/defaults.js?v=202610081501"></script>
+<script src="js/config.js?v=202610081501"></script>
+<script src="js/store-local.js?v=202610081501"></script>
+<script src="js/app.js?v=202610081501"></script>
+<script src="js/admin.js?v=202610081501"></script>
 <script>CMV.init();</script>
 </body>
 </html>
